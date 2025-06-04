@@ -1,0 +1,27 @@
+services:
+  php-web:
+    build: .
+    container_name: php-web-docker-demo-sites
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.site1.rule=Host(`site1.localhost`)"
+      - "traefik.http.routers.site1.entrypoints=web"
+      - "traefik.http.routers.site2.rule=Host(`site2.localhost`)"
+      - "traefik.http.routers.site2.entrypoints=web"
+    volumes:
+      - ./sites:/var/www/html
+    expose:
+      - "80"
+  traefik:
+    image: traefik:v2.10
+    container_name: traefik-docker-demo-sites
+    command:
+      - --providers.docker=true
+      - --entrypoints.web.address=:80
+      - --api.insecure=true
+    ports:
+      - "80:80"
+      - "8088:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./traefik/traefik.yml:/traefik.yml
