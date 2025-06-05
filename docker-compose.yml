@@ -25,3 +25,15 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./traefik/traefik.yml:/traefik.yml
+  browsersync:
+    image: node:20
+    container_name: browsersync-docker-demo-sites
+    working_dir: /app
+    volumes:
+      - ./sites:/app
+    command: >
+      sh -c "npm config set strict-ssl false &&
+             npm install -g browser-sync &&
+             browser-sync start --proxy 'php-web:80' --files '/app/**/*' --host '0.0.0.0' --port 3001 --no-open --no-ui"
+    ports:
+        - "3001:3001"
